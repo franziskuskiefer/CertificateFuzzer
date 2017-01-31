@@ -16,45 +16,40 @@ limitations under the License.
 
 #include "deletionmanipulator.h"
 
-DeletionManipulator::DeletionManipulator(shared_ptr<DERObject> obj) : Manipulator(obj) {
-    this->set_fixed_manipulations();
+#include <random>
+
+DeletionManipulator::DeletionManipulator(shared_ptr<DERObject> obj,
+                                         unsigned int randomness)
+    : Manipulator(obj, randomness) {
+  this->set_fixed_manipulations(randomness);
 }
 
-void DeletionManipulator::set_fixed_manipulations() {
-    size_t end_pos = this->derobj->raw_value.size();
+void DeletionManipulator::set_fixed_manipulations(unsigned int randomness) {
+  size_t end_pos = this->derobj->raw_value.size();
 
-    // don't do anything for null values
-    if (end_pos == 0) {
-        return;
-    }
-    end_pos--;
+  // don't do anything for null values
+  if (end_pos == 0) {
+    return;
+  }
+  end_pos--;
 
+  // entries in the vectors have to be sorted in ascending order
+  // AND there must not be double entries
+  if (end_pos > 1) {
+    this->fixed_manipulations = {
+        {0, end_pos / 2}, {0, end_pos}, {0}, {end_pos / 2}, {end_pos}};
+  } else {
+    this->fixed_manipulations = {{0}, {end_pos / 2}, {end_pos}};
+  }
 
-    // entries in the vectors have to be sorted in ascending order
-    // AND there must not be double entries
-    if (end_pos > 1) {
-        this->fixed_manipulations =  {
-                                    {0, end_pos/2},
-                                    {0, end_pos},
-                                    {0},
-                                    {end_pos/2},
-                                    {end_pos}
-                                };
-    }
-    else {
-        this->fixed_manipulations =  {
-                                    {0},
-                                    {end_pos/2},
-                                    {end_pos}
-                                };
-
-    }
-
-    // sort and remove doubles (should restore the aforementioned restrictions to the vectors)
-    for (int i=0; i<this->fixed_manipulations.size(); i++) {
-        sort(this->fixed_manipulations[i].begin(), this->fixed_manipulations[i].end());
-        unique(this->fixed_manipulations[i].begin(), this->fixed_manipulations[i].end());
-    }
+  // sort and remove doubles (should restore the aforementioned restrictions to
+  // the vectors)
+  for (int i = 0; i < this->fixed_manipulations.size(); i++) {
+    sort(this->fixed_manipulations[i].begin(),
+         this->fixed_manipulations[i].end());
+    unique(this->fixed_manipulations[i].begin(),
+           this->fixed_manipulations[i].end());
+  }
   /*  cout << "fixed manipulations " << endl;
     for (vector<size_t> v : fixed_manipulations) {
         for (size_t i : v) {
@@ -64,69 +59,78 @@ void DeletionManipulator::set_fixed_manipulations() {
     }*/
 }
 
-size_t DeletionManipulator::get_fixed_manipulations_count()
-{
-    return this->fixed_manipulations.size();
+size_t DeletionManipulator::get_fixed_manipulations_count() {
+  return this->fixed_manipulations.size();
 }
 
 vector<vector<size_t>> DeletionManipulator::get_fixed_manipulations() {
-    return this->fixed_manipulations;
+  return this->fixed_manipulations;
 }
 
-void DeletionManipulator::generate(bool random, int index) {
-    this->restore_initial_values(); // revert last modification
+void DeletionManipulator::generate(unsigned int randomness, bool random,
+                                   int index) {
+  this->restore_initial_values(); // revert last modification
 
-    // don't delete from null values
-    if (this->derobj->raw_value.size() == 0)
-        return;
+  // don't delete from null values
+  if (this->derobj->raw_value.size() == 0)
+    return;
 
+  if (!random) {
+    if (index == -1) {
+      for (size_t i = 0;
+           i < this->fixed_manipulations[this->manipulation_count].size();
+           i++) {
 
-    if (!random) {
-        if (index == -1) {
-            for (size_t i=0; i<this->fixed_manipulations[this->manipulation_count].size(); i++) {
+        // break if empty which can happen if the same index is deleted multiple
+        // times
+        if (this->derobj->raw_value.empty())
+          break;
 
-                // break if empty which can happen if the same index is deleted multiple times
-                if (this->derobj->raw_value.empty())
-                    break;
+        // -i at the end because after the deletion of the i'th element, the
+        // index has to be adjusted by i
+        this->derobj->raw_value.erase(
+            this->derobj->raw_value.begin() +
+            this->fixed_manipulations[this->manipulation_count][i] - i);
+      }
 
-                // -i at the end because after the deletion of the i'th element, the index has to be adjusted by i
-                this->derobj->raw_value.erase(this->derobj->raw_value.begin() + this->fixed_manipulations[this->manipulation_count][i] - i);
-            }
+      this->manipulation_count++;
+    } else {
+      for (size_t i = 0; i < this->fixed_manipulations[index].size(); i++) {
 
-            this->manipulation_count++;
-        }
-        else {
-            for (size_t i=0; i<this->fixed_manipulations[index].size(); i++) {
+        // break if empty which can happen if the same index is deleted multiple
+        // times
+        if (this->derobj->raw_value.empty())
+          break;
 
-                // break if empty which can happen if the same index is deleted multiple times
-                if (this->derobj->raw_value.empty())
-                    break;
-
-                // -i at the end because after the deletion of the i'th element, the index has to be adjusted by i
-                this->derobj->raw_value.erase(this->derobj->raw_value.begin() + this->fixed_manipulations[index][i] - i);
-            }
-        }
+        // -i at the end because after the deletion of the i'th element, the
+        // index has to be adjusted by i
+        this->derobj->raw_value.erase(this->derobj->raw_value.begin() +
+                                      this->fixed_manipulations[index][i] - i);
+      }
     }
-    else {
+  } else {
+    std::mt19937 rng(randomness);
 
-        // choose random interval and delete
-        size_t rand_range = this->derobj->raw_value.size();
+    // choose random interval and delete
+    size_t rand_range = this->derobj->raw_value.size();
+    std::uniform_int_distribution<size_t> dist(0, rand_range - 1);
 
-        // determine the range where the bytes are deleted
-        size_t pos_start = rand() % rand_range;
+    // determine the range where the bytes are deleted
+    size_t pos_start = dist(rng);
 
-        size_t pos_end = rand() % rand_range;
+    size_t pos_end = dist(rng);
 
-        // swap start and end if neccessary
-        if (pos_start > pos_end) {
-            size_t tmp = pos_start;
-            pos_start = pos_end;
-            pos_end = tmp;
-        }
-
-        // delete bytes
-        this->derobj->raw_value.erase(this->derobj->raw_value.begin() + pos_start, this->derobj->raw_value.begin() + pos_end);
-
-        this->manipulation_count++;
+    // swap start and end if neccessary
+    if (pos_start > pos_end) {
+      size_t tmp = pos_start;
+      pos_start = pos_end;
+      pos_end = tmp;
     }
+
+    // delete bytes
+    this->derobj->raw_value.erase(this->derobj->raw_value.begin() + pos_start,
+                                  this->derobj->raw_value.begin() + pos_end);
+
+    this->manipulation_count++;
+  }
 }

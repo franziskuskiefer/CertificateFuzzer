@@ -21,21 +21,20 @@ limitations under the License.
 #include <tuple>
 
 /**
-    sub class of Manipulator that handles generic insertion manipulations on DERObjects
+    sub class of Manipulator that handles generic insertion manipulations on
+   DERObjects
 */
 class InsertionManipulator : public Manipulator {
-    public:
-        InsertionManipulator(shared_ptr<DERObject> obj);
+public:
+  InsertionManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  void generate(unsigned int randomness, bool random, int index = -1);
+  size_t get_fixed_manipulations_count();
 
-        void generate(bool random, int index=-1);
-        size_t get_fixed_manipulations_count();
-
-
-        private:
-            void set_fixed_manipulations();
-            vector<tuple<vector<byte>, size_t>> fixed_manipulations;
-            vector<tuple<vector<byte>, size_t>> get_fixed_manipulations();
-
+private:
+  void set_fixed_manipulations(unsigned int randomness);
+  vector<tuple<vector<byte>, size_t>> fixed_manipulations;
+  vector<tuple<vector<byte>, size_t>>
+  get_fixed_manipulations(unsigned int randomness);
 };
 
 #endif

@@ -114,9 +114,10 @@ IF(DO_BUILD_STATIC)
     #ADD_LIBRARY(${FULL_LIB_STRING_STATIC} STATIC ${FLEA_SRCS})
 ENDIF()
 #src/manipulator.cpp src/DERObject.cpp src/help.cpp
-ADD_EXECUTABLE(CertFuzzer src/main.cpp  ${CertFuzzer_SRC})
+# ADD_EXECUTABLE(CertFuzzer src/main.cpp  ${CertFuzzer_SRC})
+ADD_EXECUTABLE(CertFuzzer src/test.cpp  ${CertFuzzer_SRC})
 # TARGET_LINK_LIBRARIES(CertFuzzer botan-1.11)
 target_link_libraries(CertFuzzer ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/libbotan-1.11.a)
 target_link_libraries(CertFuzzer pthread)
 
-
+ADD_LIBRARY(LibCertFuzzer STATIC ${CertFuzzer_SRC})

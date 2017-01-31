@@ -17,26 +17,23 @@ limitations under the License.
 #ifndef DERDEVIL_DELETIONMANIPULATOR_H
 #define DERDEVIL_DELETIONMANIPULATOR_H
 
-
 #include "manipulator.h"
 #include <tuple>
 
 /**
-    sub class of Manipulator that handles generic deletion manipulations on DERObjects
+    sub class of Manipulator that handles generic deletion manipulations on
+   DERObjects
 */
 class DeletionManipulator : public Manipulator {
-    public:
-        DeletionManipulator(shared_ptr<DERObject> obj);
+public:
+  DeletionManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  void generate(unsigned int randomness, bool random, int index = -1);
+  size_t get_fixed_manipulations_count();
 
-        void generate(bool random, int index=-1);
-        size_t get_fixed_manipulations_count();
-
-
-        private:
-            void set_fixed_manipulations();
-            vector<vector<size_t>> fixed_manipulations;
-            vector<vector<size_t>> get_fixed_manipulations();
-
+private:
+  void set_fixed_manipulations(unsigned int randomness);
+  vector<vector<size_t>> fixed_manipulations;
+  vector<vector<size_t>> get_fixed_manipulations();
 };
 
 #endif

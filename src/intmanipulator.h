@@ -21,29 +21,27 @@ limitations under the License.
 #include "manipulator.h"
 
 /**
-    sub class of Manipulator. Handles integer specific manipulations on DERObjects
+    sub class of Manipulator. Handles integer specific manipulations on
+   DERObjects
 */
 class IntManipulator : public Manipulator {
-    public:
-        IntManipulator(shared_ptr<DERObject> obj);
+public:
+  IntManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  void generate(unsigned int randomness, bool random, int index = -1);
 
-        void generate(bool random, int index=-1);
-        size_t get_fixed_manipulations_count();
+  size_t get_fixed_manipulations_count();
 
-        Botan::BigInt get_value();
-        void set_value(Botan::BigInt num);
+  Botan::BigInt get_value();
+  void set_value(Botan::BigInt num);
 
+private:
+  vector<Botan::BigInt> fixed_manipulations;
+  void set_fixed_manipulations(unsigned int randomness);
 
+  vector<Botan::BigInt> get_fixed_manipulations();
 
-    private:
-        vector<Botan::BigInt> fixed_manipulations;
-        void set_fixed_manipulations();
-
-        vector<Botan::BigInt> get_fixed_manipulations();
-
-
-        vector<byte> to_der(Botan::BigInt  num);
-        Botan::BigInt from_der();
+  vector<byte> to_der(Botan::BigInt num);
+  Botan::BigInt from_der();
 };
 
 #endif

@@ -14,41 +14,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-
 #ifndef DERDEVIL_UTCTIMEMANIPULATOR_H
 #define DERDEVIL_UTCTIMEMANIPULATOR_H
 
 #include "manipulator.h"
 
-
 /**
-    sub class of Manipulator. Handles UTCTime specific manipulations on DERObjects
+   sub class of Manipulator. Handles UTCTime specific manipulations on
+   DERObjects
 */
 class UTCTimeManipulator : public Manipulator {
-    public:
-        UTCTimeManipulator(shared_ptr<DERObject> obj);
-        virtual void generate(bool random, int index=-1);
-        virtual size_t get_fixed_manipulations_count();
+public:
+  UTCTimeManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  virtual size_t get_fixed_manipulations_count();
+  void generate(unsigned int randomness, bool random, int index = -1);
+  string get_value();
+  void set_value(string str);
 
-        string get_value();
-        void set_value(string str);
+  string get_random_time(unsigned int randomness);
 
-        string get_random_time();
+private:
+  vector<string> fixed_manipulations;
+  void set_fixed_manipulations(unsigned int randomness);
 
+  vector<string> get_fixed_manipulations();
 
-    private:
-        vector<string> fixed_manipulations;
-        void set_fixed_manipulations();
-
-        vector<string> get_fixed_manipulations();
-
-
-        vector<byte> to_der(string str);
-        string from_der();
+  vector<byte> to_der(string str);
+  string from_der();
 };
 
-
 #endif
-
-
-

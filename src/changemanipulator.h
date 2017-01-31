@@ -20,23 +20,20 @@ limitations under the License.
 #include "manipulator.h"
 #include <tuple>
 
-
 /**
-    sub class of Manipulator that handles generic manipulations on DERObjects that don't change the length of the data field
+    sub class of Manipulator that handles generic manipulations on DERObjects
+   that don't change the length of the data field
 */
 class ChangeManipulator : public Manipulator {
-    public:
-        ChangeManipulator(shared_ptr<DERObject> obj);
+public:
+  ChangeManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  void generate(unsigned int randomness, bool random, int index = -1);
+  size_t get_fixed_manipulations_count();
 
-        void generate(bool random, int index=-1);
-        size_t get_fixed_manipulations_count();
-
-
-        private:
-            void set_fixed_manipulations();
-            vector<vector<tuple<byte, size_t>>> fixed_manipulations;
-            vector<vector<tuple<byte, size_t>>> get_fixed_manipulations();
-
+private:
+  void set_fixed_manipulations(unsigned int randomness);
+  vector<vector<tuple<byte, size_t>>> fixed_manipulations;
+  vector<vector<tuple<byte, size_t>>> get_fixed_manipulations();
 };
 
 #endif

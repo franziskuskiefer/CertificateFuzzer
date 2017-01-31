@@ -19,31 +19,26 @@ limitations under the License.
 
 #include "manipulator.h"
 
-
 /**
     sub class of Manipulator. Handles OID specific manipulations on DERObjects
 */
 class OIDManipulator : public Manipulator {
-    public:
-        OIDManipulator(shared_ptr<DERObject> obj);
+public:
+  OIDManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  void generate(unsigned int randomness, bool random, int index = -1);
+  size_t get_fixed_manipulations_count();
 
-        void generate(bool random, int index=-1);
-        size_t get_fixed_manipulations_count();
+  vector<int> get_value();
+  void set_value(vector<int> oid);
 
-        vector<int> get_value();
-        void set_value(vector<int> oid);
+private:
+  vector<vector<int>> fixed_manipulations;
+  void set_fixed_manipulations(unsigned int randomness);
 
+  vector<vector<int>> get_fixed_manipulations();
 
-    private:
-        vector<vector<int>> fixed_manipulations;
-        void set_fixed_manipulations();
-
-        vector<vector<int>> get_fixed_manipulations();
-
-
-        vector<byte> to_der(vector<int> oid);
-        vector<int> from_der();
-
+  vector<byte> to_der(vector<int> oid);
+  vector<int> from_der();
 };
 
 #endif

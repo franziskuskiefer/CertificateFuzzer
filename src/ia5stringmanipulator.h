@@ -19,31 +19,27 @@ limitations under the License.
 
 #include "manipulator.h"
 
-
 /**
-    sub class of Manipulator. Handles IA5String specific manipulations on DERObjects
+    sub class of Manipulator. Handles IA5String specific manipulations on
+   DERObjects
 */
 class IA5StringManipulator : public Manipulator {
-    public:
-        IA5StringManipulator(shared_ptr<DERObject> obj);
-        virtual void generate(bool random, int index=-1);
-        virtual size_t get_fixed_manipulations_count();
+public:
+  IA5StringManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  void generate(unsigned int randomness, bool random, int index = -1);
+  virtual size_t get_fixed_manipulations_count();
 
-        string get_value();
-        void set_value(string str);
+  string get_value();
+  void set_value(string str);
 
+private:
+  vector<string> fixed_manipulations;
+  void set_fixed_manipulations(unsigned int randomness);
 
+  vector<string> get_fixed_manipulations();
 
-    private:
-        vector<string> fixed_manipulations;
-        void set_fixed_manipulations();
-
-        vector<string> get_fixed_manipulations();
-
-
-        vector<byte> to_der(string str);
-        string from_der();
+  vector<byte> to_der(string str);
+  string from_der();
 };
-
 
 #endif
