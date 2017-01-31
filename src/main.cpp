@@ -1361,7 +1361,7 @@ void set_common_name() {
 
 int main(int argc, char* argv[]) {
     string cert;
-std::cout << argv[6] << std::endl;
+
     if (argc == 7) {
         cert = CERT_PATH + argv[1];
 

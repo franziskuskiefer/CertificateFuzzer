@@ -24,9 +24,9 @@ SET(CMAKE_C_FLAGS "-std=c99 -pedantic")
 
 ADD_DEFINITIONS( 
       #-finline-functions -O3  -fomit-frame-pointer  -momit-leaf-frame-pointer 
-
+     -g
      -std=c++11
-	 -fstrict-aliasing
+     -fstrict-aliasing
      -W -Wall  -Wno-long-long
      -Wno-sign-compare -Wno-unused-parameter -Wno-unused-label -Wno-cast-qual
      -Wno-char-subscripts 
@@ -63,7 +63,7 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG" OR CMA
 ENDIF()
 
 
-LINK_DIRECTORIES(Libraries/Botan-1.11.19/)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/)
 
 SET(BUILD_STATIC false CACHE STRING
       "Wether to build also a static version of the library or not: true/false"
@@ -91,7 +91,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
 
 # Directories
-SET(INCLUDE_DIR include Libraries/Botan-1.11.19/build/include/ src )
+SET(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/build/include/ src )
 
 SET(SRC_DIR src )
 
@@ -115,6 +115,8 @@ IF(DO_BUILD_STATIC)
 ENDIF()
 #src/manipulator.cpp src/DERObject.cpp src/help.cpp
 ADD_EXECUTABLE(CertFuzzer src/main.cpp  ${CertFuzzer_SRC})
-TARGET_LINK_LIBRARIES(CertFuzzer botan-1.11)
+# TARGET_LINK_LIBRARIES(CertFuzzer botan-1.11)
+target_link_libraries(CertFuzzer ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/libbotan-1.11.a)
+target_link_libraries(CertFuzzer pthread)
 
 

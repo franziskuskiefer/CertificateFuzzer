@@ -2,7 +2,7 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-export LD_LIBRARY_PATH=$DIR/Libraries/Botan-1.11.19/
+# export LD_LIBRARY_PATH=$DIR/Libraries/Botan-1.11.19/
 
 
 MAX_CERTS=0
@@ -53,4 +53,3 @@ done
 cd build/
 ulimit -s 81920
 ./CertFuzzer $BASE_CERT $MAX_CERTS $SIGN_CERTS $CREATE_TEST_CERT $SET_COMMONNAME $SEED
-
