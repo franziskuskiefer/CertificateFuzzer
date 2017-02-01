@@ -26,8 +26,8 @@ limitations under the License.
 */
 class IntManipulator : public Manipulator {
 public:
-  IntManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
-  void generate(unsigned int randomness, bool random, int index = -1);
+  IntManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  void generate(uint64_t randomness, bool random, int index = -1);
 
   size_t get_fixed_manipulations_count();
 
@@ -36,7 +36,7 @@ public:
 
 private:
   vector<Botan::BigInt> fixed_manipulations;
-  void set_fixed_manipulations(unsigned int randomness);
+  void set_fixed_manipulations(uint64_t randomness);
 
   vector<Botan::BigInt> get_fixed_manipulations();
 

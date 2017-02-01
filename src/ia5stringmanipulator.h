@@ -25,8 +25,8 @@ limitations under the License.
 */
 class IA5StringManipulator : public Manipulator {
 public:
-  IA5StringManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
-  void generate(unsigned int randomness, bool random, int index = -1);
+  IA5StringManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  void generate(uint64_t randomness, bool random, int index = -1);
   virtual size_t get_fixed_manipulations_count();
 
   string get_value();
@@ -34,7 +34,7 @@ public:
 
 private:
   vector<string> fixed_manipulations;
-  void set_fixed_manipulations(unsigned int randomness);
+  void set_fixed_manipulations(uint64_t randomness);
 
   vector<string> get_fixed_manipulations();
 

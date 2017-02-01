@@ -19,12 +19,12 @@ limitations under the License.
 #include <random>
 
 InsertionManipulator::InsertionManipulator(shared_ptr<DERObject> obj,
-                                           unsigned int randomness)
+                                           uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
-void InsertionManipulator::set_fixed_manipulations(unsigned int randomness) {
+void InsertionManipulator::set_fixed_manipulations(uint64_t randomness) {
   size_t end_pos = this->derobj->raw_value.size();
 
   this->fixed_manipulations = {tuple<vector<byte>, size_t>({0}, 0),
@@ -38,11 +38,11 @@ size_t InsertionManipulator::get_fixed_manipulations_count() {
 }
 
 vector<tuple<vector<byte>, size_t>>
-InsertionManipulator::get_fixed_manipulations(unsigned int randomness) {
+InsertionManipulator::get_fixed_manipulations(uint64_t randomness) {
   return this->fixed_manipulations;
 }
 
-void InsertionManipulator::generate(unsigned int randomness, bool random,
+void InsertionManipulator::generate(uint64_t randomness, bool random,
                                     int index) {
 
   this->restore_initial_values(); // revert last modification

@@ -19,7 +19,7 @@ limitations under the License.
 #include <random>
 
 PrintableStringManipulator::PrintableStringManipulator(
-    shared_ptr<DERObject> obj, unsigned int randomness)
+    shared_ptr<DERObject> obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
@@ -52,7 +52,7 @@ size_t PrintableStringManipulator::get_fixed_manipulations_count() {
 }
 
 void PrintableStringManipulator::set_fixed_manipulations(
-    unsigned int randomness) {
+    uint64_t randomness) {
   // also use general string manipulations
   vector<string> string_manipulations =
       this->general_fixed_string_manipulations();
@@ -65,7 +65,7 @@ void PrintableStringManipulator::set_fixed_manipulations(
                                    string_manipulations.end());
 }
 
-void PrintableStringManipulator::generate(unsigned int randomness, bool random,
+void PrintableStringManipulator::generate(uint64_t randomness, bool random,
                                           int index) {
   if (!random) {
     if (index == -1)

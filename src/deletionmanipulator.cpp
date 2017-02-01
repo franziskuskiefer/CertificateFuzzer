@@ -19,12 +19,12 @@ limitations under the License.
 #include <random>
 
 DeletionManipulator::DeletionManipulator(shared_ptr<DERObject> obj,
-                                         unsigned int randomness)
+                                         uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
-void DeletionManipulator::set_fixed_manipulations(unsigned int randomness) {
+void DeletionManipulator::set_fixed_manipulations(uint64_t randomness) {
   size_t end_pos = this->derobj->raw_value.size();
 
   // don't do anything for null values
@@ -67,7 +67,7 @@ vector<vector<size_t>> DeletionManipulator::get_fixed_manipulations() {
   return this->fixed_manipulations;
 }
 
-void DeletionManipulator::generate(unsigned int randomness, bool random,
+void DeletionManipulator::generate(uint64_t randomness, bool random,
                                    int index) {
   this->restore_initial_values(); // revert last modification
 

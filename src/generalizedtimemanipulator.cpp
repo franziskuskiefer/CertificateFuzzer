@@ -18,7 +18,7 @@ limitations under the License.
 #include <random>
 
 GeneralizedTimeManipulator::GeneralizedTimeManipulator(
-    shared_ptr<DERObject> obj, unsigned int randomness)
+    shared_ptr<DERObject> obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
@@ -50,7 +50,7 @@ size_t GeneralizedTimeManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-string GeneralizedTimeManipulator::get_random_time(unsigned int randomness) {
+string GeneralizedTimeManipulator::get_random_time(uint64_t randomness) {
   string result = "";
   std::mt19937 rng(randomness);
   std::uniform_int_distribution<size_t> dist(0, 9);
@@ -113,7 +113,7 @@ string GeneralizedTimeManipulator::get_random_time(unsigned int randomness) {
   return result;
 }
 
-void GeneralizedTimeManipulator::set_fixed_manipulations(unsigned int randomness) {
+void GeneralizedTimeManipulator::set_fixed_manipulations(uint64_t randomness) {
   this->fixed_manipulations.push_back("910230234540Z");
 
   // also use general string manipulations
@@ -127,7 +127,7 @@ void GeneralizedTimeManipulator::set_fixed_manipulations(unsigned int randomness
                                    string_manipulations.end());
 }
 
-void GeneralizedTimeManipulator::generate(unsigned int randomness, bool random,
+void GeneralizedTimeManipulator::generate(uint64_t randomness, bool random,
                                           int index) {
   if (!random) {
     if (index == -1)

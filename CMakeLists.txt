@@ -121,3 +121,5 @@ target_link_libraries(CertFuzzer ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/lib
 target_link_libraries(CertFuzzer pthread)
 
 ADD_LIBRARY(LibCertFuzzer STATIC ${CertFuzzer_SRC})
+target_link_libraries(LibCertFuzzer -Wl,--whole-archive ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/libbotan-1.11.a -Wl,--no-whole-archive)
+target_link_libraries(LibCertFuzzer pthread)

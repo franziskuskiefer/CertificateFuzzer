@@ -19,7 +19,7 @@ limitations under the License.
 #include <random>
 
 UTF8StringManipulator::UTF8StringManipulator(shared_ptr<DERObject> obj,
-                                             unsigned int randomness)
+                                             uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
@@ -52,7 +52,7 @@ size_t UTF8StringManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-void UTF8StringManipulator::set_fixed_manipulations(unsigned int randomness) {
+void UTF8StringManipulator::set_fixed_manipulations(uint64_t randomness) {
 
   // also use general string manipulations
   vector<string> string_manipulations =
@@ -66,7 +66,7 @@ void UTF8StringManipulator::set_fixed_manipulations(unsigned int randomness) {
                                    string_manipulations.end());
 }
 
-void UTF8StringManipulator::generate(unsigned int randomness, bool random,
+void UTF8StringManipulator::generate(uint64_t randomness, bool random,
                                      int index) {
   if (!random) {
     if (index == -1)

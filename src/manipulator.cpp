@@ -28,7 +28,7 @@ limitations under the License.
 string Manipulator::long_string = string("");
 size_t Manipulator::long_string_count = 0;
 
-Manipulator::Manipulator(shared_ptr<DERObject> obj, unsigned int randomness) {
+Manipulator::Manipulator(shared_ptr<DERObject> obj, uint64_t randomness) {
   this->derobj = obj;
   this->manipulation_count = 0;
 
@@ -66,7 +66,7 @@ size_t Manipulator::get_current_manipulation_count() {
 
 // factory method
 shared_ptr<Manipulator> Manipulator::make_manipulator(shared_ptr<DERObject> obj,
-                                                      unsigned int randomness) {
+                                                      uint64_t randomness) {
 
   shared_ptr<Manipulator> r = nullptr;
 
@@ -134,7 +134,7 @@ vector<string> Manipulator::general_fixed_string_manipulations() {
     return a random string that includes random symbols
 */
 string
-Manipulator::general_random_string_manipulation(unsigned int randomness) {
+Manipulator::general_random_string_manipulation(uint64_t randomness) {
   std::mt19937 rng(randomness);
   std::uniform_int_distribution<size_t> dist(10, 1000);
   int length = dist(rng);

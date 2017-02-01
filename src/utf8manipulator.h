@@ -25,15 +25,15 @@ limitations under the License.
 */
 class UTF8StringManipulator : public Manipulator {
 public:
-  UTF8StringManipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  UTF8StringManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
   virtual size_t get_fixed_manipulations_count();
-  void generate(unsigned int randomness, bool random, int index = -1);
+  void generate(uint64_t randomness, bool random, int index = -1);
   string get_value();
   void set_value(string str);
 
 private:
   vector<string> fixed_manipulations;
-  void set_fixed_manipulations(unsigned int randomness);
+  void set_fixed_manipulations(uint64_t randomness);
 
   vector<string> get_fixed_manipulations();
 

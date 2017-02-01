@@ -19,12 +19,12 @@ limitations under the License.
 #include <random>
 
 OIDManipulator::OIDManipulator(shared_ptr<DERObject> obj,
-                               unsigned int randomness)
+                               uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
-void OIDManipulator::set_fixed_manipulations(unsigned int randomness) {
+void OIDManipulator::set_fixed_manipulations(uint64_t randomness) {
   this->fixed_manipulations.push_back({1, 2, 3, 4});
   this->fixed_manipulations.push_back({2, 1, 4});
   this->fixed_manipulations.push_back({2, 1, 4, 4});
@@ -97,7 +97,7 @@ vector<byte> OIDManipulator::to_der(vector<int> oid) {
   return der;
 }
 
-void OIDManipulator::generate(unsigned int randomness, bool random, int index) {
+void OIDManipulator::generate(uint64_t randomness, bool random, int index) {
   if (!random) {
     if (index == -1)
       this->set_value(this->fixed_manipulations[this->manipulation_count++]);

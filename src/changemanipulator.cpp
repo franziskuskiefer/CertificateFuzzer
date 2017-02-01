@@ -19,12 +19,12 @@ limitations under the License.
 #include <random>
 
 ChangeManipulator::ChangeManipulator(shared_ptr<DERObject> obj,
-                                     unsigned int randomness)
+                                     uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
-void ChangeManipulator::set_fixed_manipulations(unsigned int randomness) {
+void ChangeManipulator::set_fixed_manipulations(uint64_t randomness) {
 
   size_t end_pos = this->derobj->raw_value.size();
 
@@ -54,7 +54,7 @@ ChangeManipulator::get_fixed_manipulations() {
   return this->fixed_manipulations;
 }
 
-void ChangeManipulator::generate(unsigned int randomness, bool random,
+void ChangeManipulator::generate(uint64_t randomness, bool random,
                                  int index) {
 
   this->restore_initial_values(); // revert last modification

@@ -64,13 +64,13 @@ public:
   /**
       Constructor. Expects a leaf node (primitive type) DERObject
   */
-  Manipulator(shared_ptr<DERObject> obj, unsigned int randomness);
+  Manipulator(shared_ptr<DERObject> obj, uint64_t randomness);
 
   /**
       Generic generate method. Must be implemented by subclasses that should
      generate a mutation based on the type.
   */
-  virtual void generate(unsigned int randomness, bool random,
+  virtual void generate(uint64_t randomness, bool random,
                         int index = -1) = 0;
 
   /**
@@ -89,7 +89,7 @@ public:
       Factory method. Returns a manipulator of an appropriate type
   */
   static shared_ptr<Manipulator> make_manipulator(shared_ptr<DERObject> obj,
-                                                  unsigned int randomness);
+                                                  uint64_t randomness);
 
 protected:
   shared_ptr<DERObject> derobj; ///< pointer to the manipulated DERObject
@@ -115,7 +115,7 @@ protected:
   /**
       returns a random string that has been geerated according to some rules
   */
-  string general_random_string_manipulation(unsigned int randomness);
+  string general_random_string_manipulation(uint64_t randomness);
 
   static string long_string; ///< stores a long string that will be used to test
                              /// the capability of TLS implementations to deal

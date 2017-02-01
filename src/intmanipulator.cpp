@@ -19,7 +19,7 @@ limitations under the License.
 #include <random>
 
 IntManipulator::IntManipulator(shared_ptr<DERObject> obj,
-                               unsigned int randomness)
+                               uint64_t randomness)
     : Manipulator(obj, randomness) {
   set_fixed_manipulations(randomness);
 }
@@ -28,7 +28,7 @@ void IntManipulator::set_value(Botan::BigInt num) {
   this->derobj->raw_value = IntManipulator::to_der(num);
 }
 
-void IntManipulator::set_fixed_manipulations(unsigned int randomness) {
+void IntManipulator::set_fixed_manipulations(uint64_t randomness) {
   Botan::BigInt base_value = this->get_value();
 
   /***/
@@ -114,7 +114,7 @@ size_t IntManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-void IntManipulator::generate(unsigned int randomness, bool random, int index) {
+void IntManipulator::generate(uint64_t randomness, bool random, int index) {
   if (!random) {
     if (index == -1)
       this->set_value(this->fixed_manipulations[this->manipulation_count++]);

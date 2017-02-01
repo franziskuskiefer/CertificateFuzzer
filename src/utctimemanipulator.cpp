@@ -19,7 +19,7 @@ limitations under the License.
 #include <random>
 
 UTCTimeManipulator::UTCTimeManipulator(shared_ptr<DERObject> obj,
-                                       unsigned int randomness)
+                                       uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
@@ -51,7 +51,7 @@ size_t UTCTimeManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-void UTCTimeManipulator::set_fixed_manipulations(unsigned int randomness) {
+void UTCTimeManipulator::set_fixed_manipulations(uint64_t randomness) {
   this->fixed_manipulations.push_back("910230234540Z");
 
   // also use general string manipulations
@@ -66,7 +66,7 @@ void UTCTimeManipulator::set_fixed_manipulations(unsigned int randomness) {
                                    string_manipulations.end());
 }
 
-string UTCTimeManipulator::get_random_time(unsigned int randomness) {
+string UTCTimeManipulator::get_random_time(uint64_t randomness) {
   string result = "";
   std::mt19937 rng(randomness);
   std::uniform_int_distribution<size_t> dist(0, 9);
@@ -117,7 +117,7 @@ string UTCTimeManipulator::get_random_time(unsigned int randomness) {
   return result;
 }
 
-void UTCTimeManipulator::generate(unsigned int randomness, bool random,
+void UTCTimeManipulator::generate(uint64_t randomness, bool random,
                                   int index) {
   if (!random) {
     if (index == -1)

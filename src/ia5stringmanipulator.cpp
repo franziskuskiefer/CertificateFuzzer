@@ -19,7 +19,7 @@ limitations under the License.
 #include <random>
 
 IA5StringManipulator::IA5StringManipulator(shared_ptr<DERObject> obj,
-                                           unsigned int randomness)
+                                           uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
@@ -51,7 +51,7 @@ size_t IA5StringManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-void IA5StringManipulator::set_fixed_manipulations(unsigned int randomness) {
+void IA5StringManipulator::set_fixed_manipulations(uint64_t randomness) {
 
   // also use general string manipulations
   vector<string> string_manipulations =
@@ -65,7 +65,7 @@ void IA5StringManipulator::set_fixed_manipulations(unsigned int randomness) {
                                    string_manipulations.end());
 }
 
-void IA5StringManipulator::generate(unsigned int randomness, bool random,
+void IA5StringManipulator::generate(uint64_t randomness, bool random,
                                     int index) {
   if (!random) {
     if (index == -1)
