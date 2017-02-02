@@ -38,19 +38,22 @@ Manipulator::Manipulator(shared_ptr<DERObject> obj, uint64_t randomness) {
   this->initial_derobj_values.raw_length = obj->raw_length;
 
   static bool initialized;
-  // init long_string as 50mb string
+
+  // init a long_string
   if (!initialized) {
     initialized = true;
 
     size_t c_start = 0;
-    size_t c_end = 50 * 1024 * 1024;
+    size_t c_end = 3 * 1024 * 1024;
     char *c = (char *)malloc(c_end);
     std::mt19937 rng(randomness);
     std::uniform_int_distribution<size_t> dist(1, 253);
-    for (; c_start < c_end; c_start++) {
-      *(c + c_start) = dist(rng); // avoid null terminator
+    for (; c_start < c_end - 1; c_start++) {
+      *(c + c_start) = dist(rng);
     }
-    // Manipulator::long_string.insert(0, string(c));
+    c[c_end - 1] = '\0';
+    Manipulator::long_string.insert(0, string(c));
+    free(c);
   }
 }
 
