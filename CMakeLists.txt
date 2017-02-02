@@ -3,6 +3,9 @@
 # the project as ${FLEA_BINARY_DIR}.
 cmake_minimum_required(VERSION 2.8)
 
+SET (CMAKE_C_COMPILER   "clang")
+SET (CMAKE_CXX_COMPILER "clang++")
+
 #note: use correct gcc version /usr/bin/gcc
 PROJECT(CertFuzzer)
 
@@ -34,7 +37,7 @@ ADD_DEFINITIONS(
   -Wpointer-arith  -Wcast-align -Wwrite-strings
   #out: -Wconversion 
   )
-
+SET (CMAKE_CXX_FLAGS "-fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize=leak")
 
 #ADD_DEFINITIONS(-DFLEA_PLTF_X86)
 #ADD_DEFINITIONS(-DFLEA_PLTF_X86_64)
