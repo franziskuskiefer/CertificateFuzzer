@@ -18,8 +18,7 @@ limitations under the License.
 
 #include <random>
 
-OIDManipulator::OIDManipulator(shared_ptr<DERObject> obj,
-                               uint64_t randomness)
+OIDManipulator::OIDManipulator(DERObject &obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
@@ -33,9 +32,9 @@ void OIDManipulator::set_fixed_manipulations(uint64_t randomness) {
 vector<int> OIDManipulator::get_value() { return this->from_der(); }
 
 void OIDManipulator::set_value(vector<int> oid) {
-  this->derobj->raw_value = this->to_der(oid);
-  this->derobj->raw_length =
-      DERObject::int_to_raw_length(this->derobj->raw_value.size());
+  this->derobj.raw_value = this->to_der(oid);
+  this->derobj.raw_length =
+      DERObject::int_to_raw_length(this->derobj.raw_value.size());
 }
 
 size_t OIDManipulator::get_fixed_manipulations_count() {
@@ -50,20 +49,20 @@ vector<int> OIDManipulator::from_der() {
   vector<int> oid;
   byte current_byte;
 
-  current_byte = this->derobj->raw_value[index];
+  current_byte = this->derobj.raw_value[index];
   oid.push_back(int(current_byte) / 40);
   oid.push_back(int(current_byte) % 40);
 
   // continue with variable length quantity
-  while (index < this->derobj->raw_value.size() - 1) {
-    current_byte = this->derobj->raw_value[++index];
+  while (index < this->derobj.raw_value.size() - 1) {
+    current_byte = this->derobj.raw_value[++index];
     if (int(current_byte) <= 127) {
       oid.push_back(int(current_byte));
     } else {
       vector<int> tmp;
       while (int(current_byte) >= 128) {
         tmp.push_back(int(current_byte) - 128);
-        current_byte = this->derobj->raw_value[++index];
+        current_byte = this->derobj.raw_value[++index];
       }
       tmp.push_back(int(current_byte));
 
@@ -105,7 +104,7 @@ void OIDManipulator::generate(uint64_t randomness, bool random, int index) {
       this->set_value(this->fixed_manipulations[index]);
   } else {
     std::mt19937 rng(randomness);
-    std::uniform_int_distribution<size_t> dist(0, 254);
+    std::uniform_int_distribution<int> dist(0, 254);
     std::bernoulli_distribution bdist;
 
     vector<int> result;
@@ -118,9 +117,11 @@ void OIDManipulator::generate(uint64_t randomness, bool random, int index) {
     }
 
     // randomly add some more values
-    std::uniform_int_distribution<size_t> dist2(0, 9);
+    std::uniform_int_distribution<size_t> dist2(1, 9);
     for (int i = 0; i < dist2(rng); i++) {
-      result.push_back(dist(rng));
+      int x = dist(rng);
+      std::cout << x << std::endl;
+      result.push_back(x);
     }
 
     this->set_value(result);

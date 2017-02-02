@@ -22,11 +22,11 @@ limitations under the License.
 
 /**
     sub class of Manipulator that handles generic insertion manipulations on
-   DERObjects
+    DERObjects
 */
 class InsertionManipulator : public Manipulator {
 public:
-  InsertionManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  InsertionManipulator(DERObject obj, uint64_t randomness);
   void generate(uint64_t randomness, bool random, int index = -1);
   size_t get_fixed_manipulations_count();
 

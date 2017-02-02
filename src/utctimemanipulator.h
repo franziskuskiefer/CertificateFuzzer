@@ -25,7 +25,7 @@ limitations under the License.
 */
 class UTCTimeManipulator : public Manipulator {
 public:
-  UTCTimeManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  UTCTimeManipulator(DERObject obj, uint64_t randomness);
   virtual size_t get_fixed_manipulations_count();
   void generate(uint64_t randomness, bool random, int index = -1);
   string get_value();

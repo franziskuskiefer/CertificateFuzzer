@@ -18,21 +18,20 @@ limitations under the License.
 
 #include <random>
 
-UTCTimeManipulator::UTCTimeManipulator(shared_ptr<DERObject> obj,
-                                       uint64_t randomness)
+UTCTimeManipulator::UTCTimeManipulator(DERObject obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void UTCTimeManipulator::set_value(string str) {
-  this->derobj->raw_value = UTCTimeManipulator::to_der(str);
+  this->derobj.raw_value = UTCTimeManipulator::to_der(str);
 }
 
 string UTCTimeManipulator::get_value() { return this->from_der(); }
 
 string UTCTimeManipulator::from_der() {
   string str = "";
-  for (byte b : this->derobj->raw_value) {
+  for (byte b : this->derobj.raw_value) {
     str.append(1, b);
   }
 
@@ -117,8 +116,7 @@ string UTCTimeManipulator::get_random_time(uint64_t randomness) {
   return result;
 }
 
-void UTCTimeManipulator::generate(uint64_t randomness, bool random,
-                                  int index) {
+void UTCTimeManipulator::generate(uint64_t randomness, bool random, int index) {
   if (!random) {
     if (index == -1)
       this->set_value(this->fixed_manipulations[this->manipulation_count++]);

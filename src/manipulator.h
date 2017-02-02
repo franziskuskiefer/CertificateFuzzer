@@ -17,6 +17,7 @@ limitations under the License.
 #ifndef DERDEVIL_MANIPULATOR_H
 #define DERDEVIL_MANIPULATOR_H
 
+#include <assert.h>
 #include <iostream>
 #include <math.h>
 #include <ostream>
@@ -51,78 +52,38 @@ using namespace std;
     The (virtual) base class for all manipulator subclasses.
 
     The constructor of a class that inherits from this class takes a shared
-   pointer to a DERObject.
+    pointer to a DERObject.
     This DERObject is supposed to be a leaf node (primitive type), meaning that
-   it represents one field of the X.509 certificate that is not constructed of
-   other values.
+    it represents one field of the X.509 certificate that is not constructed of
+    other values.
     The manipulator then is able to manipulate the field content based on the
-   type of the field.
+    type of the field.
     Every field gets its own subclass
 */
 class Manipulator {
 public:
-  /**
-      Constructor. Expects a leaf node (primitive type) DERObject
-  */
-  Manipulator(shared_ptr<DERObject> obj, uint64_t randomness);
-
-  /**
-      Generic generate method. Must be implemented by subclasses that should
-     generate a mutation based on the type.
-  */
-  virtual void generate(uint64_t randomness, bool random,
-                        int index = -1) = 0;
-
-  /**
-      Restores the values of DERObject to the values that they had when the
-     constructor was called
-  */
+  Manipulator(DERObject &obj, uint64_t randomness);
+  virtual void generate(uint64_t randomness, bool random, int index = -1) = 0;
   void restore_initial_values();
-
-  /**
-      returns the number of fixed (deterministic) manipulations that are
-     available
-  */
   virtual size_t get_fixed_manipulations_count() = 0;
-
-  /**
-      Factory method. Returns a manipulator of an appropriate type
-  */
-  static shared_ptr<Manipulator> make_manipulator(shared_ptr<DERObject> obj,
+  static unique_ptr<Manipulator> make_manipulator(DERObject obj,
                                                   uint64_t randomness);
 
 protected:
-  shared_ptr<DERObject> derobj; ///< pointer to the manipulated DERObject
-
-  size_t manipulation_count; ///< keeps track of the number of applied
-                             /// manipulations
-
-  /**
-      getter for manipulation_count
-  */
+  DERObject &derobj;
+  size_t manipulation_count;
   size_t get_current_manipulation_count();
+  derobj_values initial_derobj_values;
 
-  derobj_values initial_derobj_values; ///< stores the values of the DERObj that
-                                       /// is passed in the constructor. Used to
-  /// reset the manipulations afterwards.
-
-  /**
-      returns a vector of strings that contains all fixed string manipulations
-     that can be applied to any string based type
-  */
+  // Returns a vector of strings that contains all fixed string manipulations
+  // that can be applied to any string based type.
   vector<string> general_fixed_string_manipulations();
 
-  /**
-      returns a random string that has been geerated according to some rules
-  */
+  // Returns a random string that has been geerated according to some rules.
   string general_random_string_manipulation(uint64_t randomness);
 
-  static string long_string; ///< stores a long string that will be used to test
-                             /// the capability of TLS implementations to deal
-  /// with long fields in certificates
-
-  static size_t
-      long_string_count; ///< keeps track of how often long_string has been used
+  static string long_string;
+  static size_t long_string_count;
 };
 
 #endif

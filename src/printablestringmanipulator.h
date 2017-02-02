@@ -19,19 +19,14 @@ limitations under the License.
 
 #include "manipulator.h"
 
-/**
-    sub class of Manipulator. Handles PrintableString specific manipulations on
-   DERObjects
-*/
 class PrintableStringManipulator : public Manipulator {
 public:
-  PrintableStringManipulator(shared_ptr<DERObject> obj,
-                             uint64_t randomness);
+  PrintableStringManipulator(DERObject obj, uint64_t randomness);
   void generate(uint64_t randomness, bool random, int index = -1);
   virtual size_t get_fixed_manipulations_count();
 
   string get_value();
-  void set_value(string str);
+  virtual void set_value(string str);
 
 private:
   vector<string> fixed_manipulations;

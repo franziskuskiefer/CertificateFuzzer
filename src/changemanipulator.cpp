@@ -18,15 +18,14 @@ limitations under the License.
 
 #include <random>
 
-ChangeManipulator::ChangeManipulator(shared_ptr<DERObject> obj,
-                                     uint64_t randomness)
+ChangeManipulator::ChangeManipulator(DERObject &obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void ChangeManipulator::set_fixed_manipulations(uint64_t randomness) {
 
-  size_t end_pos = this->derobj->raw_value.size();
+  size_t end_pos = this->derobj.raw_value.size();
 
   // don't do anything for null values
   if (end_pos == 0) {
@@ -54,8 +53,7 @@ ChangeManipulator::get_fixed_manipulations() {
   return this->fixed_manipulations;
 }
 
-void ChangeManipulator::generate(uint64_t randomness, bool random,
-                                 int index) {
+void ChangeManipulator::generate(uint64_t randomness, bool random, int index) {
 
   this->restore_initial_values(); // revert last modification
 
@@ -63,13 +61,13 @@ void ChangeManipulator::generate(uint64_t randomness, bool random,
     if (index == -1) {
       for (tuple<byte, size_t> t :
            this->fixed_manipulations[this->manipulation_count]) {
-        this->derobj->raw_value[get<1>(t)] = get<0>(t);
+        this->derobj.raw_value[get<1>(t)] = get<0>(t);
       }
 
       this->manipulation_count++;
     } else {
       for (tuple<byte, size_t> t : this->fixed_manipulations[index]) {
-        this->derobj->raw_value[get<1>(t)] = get<0>(t);
+        this->derobj.raw_value[get<1>(t)] = get<0>(t);
       }
     }
   } else {
@@ -77,7 +75,7 @@ void ChangeManipulator::generate(uint64_t randomness, bool random,
     // randomly change the values in this interval
     std::mt19937 rng(randomness);
 
-    size_t rand_range = this->derobj->raw_value.size();
+    size_t rand_range = this->derobj.raw_value.size();
     std::uniform_int_distribution<size_t> dist(0, rand_range - 1);
 
     // don't do anything for null values
@@ -105,7 +103,7 @@ void ChangeManipulator::generate(uint64_t randomness, bool random,
 
     // change bytes
     for (int i = 0; i < (pos_end - pos_start) + 1; i++) {
-      this->derobj->raw_value[i + pos_start] = rand_bytes[i];
+      this->derobj.raw_value[i + pos_start] = rand_bytes[i];
     }
 
     this->manipulation_count++;

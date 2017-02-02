@@ -26,7 +26,7 @@ limitations under the License.
 */
 class DeletionManipulator : public Manipulator {
 public:
-  DeletionManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  DeletionManipulator(DERObject obj, uint64_t randomness);
   void generate(uint64_t randomness, bool random, int index = -1);
   size_t get_fixed_manipulations_count();
 

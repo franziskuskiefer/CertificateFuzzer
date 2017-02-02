@@ -17,61 +17,86 @@ limitations under the License.
 #ifndef DERDEVIL_DEROBJECT_H
 #define DERDEVIL_DEROBJECT_H
 
+#include <algorithm>
 #include <fstream>
-#include <vector>
-#include <stack>
-#include <iterator>
 #include <iostream>
-#include <sstream>
+#include <iterator>
 #include <list>
 #include <math.h>
 #include <memory>
-#include <algorithm>
+#include <sstream>
+#include <stack>
 #include <string>
+#include <vector>
 
 using byte = unsigned char;
 using namespace std;
 
 /**
-    Data type that is used to represent fields of a DER encoded X.509 certificate in a tree structure
+    Data type that is used to represent fields of a DER encoded X.509
+   certificate in a tree structure
 */
 class DERObject {
-	public:
-        DERObject();
+public:
+  DERObject();
 
-        // The following 3 attributes contain the TLV values
-        byte raw_tag; ///< stores the tag in byte encoding
-        vector<byte> raw_length; ///< stores the length in byte encoding
-        vector<byte> raw_value; ///< stores the data of the field in byte encoding
+  // The following 3 attributes contain the TLV values
+  byte raw_tag;            ///< stores the tag in byte encoding
+  vector<byte> raw_length; ///< stores the length in byte encoding
+  vector<byte> raw_value;  ///< stores the data of the field in byte encoding
 
+  string name; ///< is assign to specific DERObjects that represent a named part
+               ///of a certificate
+  bool pseudo_constructed; ///< for things like OCTET STRINGs that are not
+                           ///really constructed, but contain ASN.1 data as if
+                           ///it was an constructed type
 
-        string name; ///< is assign to specific DERObjects that represent a named part of a certificate
-        bool pseudo_constructed; ///< for things like OCTET STRINGs that are not really constructed, but contain ASN.1 data as if it was an constructed type
+  // the attributes below are mainly used during build-up of the tree
+  // and not necessarily maintained when modifying the tree
 
-        // the attributes below are mainly used during build-up of the tree
-        // and not necessarily maintained when modifying the tree
+  vector<shared_ptr<DERObject>> children; ///< stores pointers children if it's
+                                          ///a constructed type (not necessarily
+                                          ///maintained after tree construction)
+  shared_ptr<DERObject> parent;           ///< reference to the parent node (not
+                                          ///necessarily maintained after tree
+                                          ///construction)
+  int pos; ///< only used during construction of the tree
 
-        vector<shared_ptr<DERObject>> children;     ///< stores pointers children if it's a constructed type (not necessarily maintained after tree construction)
-		shared_ptr<DERObject> parent;               ///< reference to the parent node (not necessarily maintained after tree construction)
-        int pos;                                    ///< only used during construction of the tree
+  bool root;                ///< Store whether this object is a root node
+  bool is_constructed();    ///< returns true for constructed types
+  vector<byte> raw_bytes(); ///< returns the concatenation of the complete TLV
+                            ///triple for primitive types and the concatenation
+                            ///of all children for constructed types. Called on
+                            ///the root node it returns the complete X.509
+                            ///certificate in DER encoding
 
-        bool root;                                  ///< Store whether this object is a root node
-        bool is_constructed();                      ///< returns true for constructed types
-        vector<byte> raw_bytes();                   ///< returns the concatenation of the complete TLV triple for primitive types and the concatenation of all children for constructed types. Called on the root node it returns the complete X.509 certificate in DER encoding
+  void recalculate_lengths(); ///< If called on an intermediate node it will
+                              ///recalculate its length and the length of all
+                              ///subsequent children to adjust for changes in
+                              ///the data of its children
 
-        void recalculate_lengths();                 ///< If called on an intermediate node it will recalculate its length and the length of all subsequent children to adjust for changes in the data of its children
+  static vector<byte> int_to_raw_length(size_t n); ///< converts a base 10
+                                                   ///integer to the DER
+                                                   ///encoding that is used for
+                                                   ///raw_length
+  static int raw_length_to_int(vector<byte> raw_length); ///< converts a vector
+                                                         ///that contains the
+                                                         ///DER encoding of the
+                                                         ///length into a base
+                                                         ///10 integer
 
-        static vector<byte> int_to_raw_length(size_t n);    ///< converts a base 10 integer to the DER encoding that is used for raw_length
-        static int raw_length_to_int(vector<byte> raw_length);  ///< converts a vector that contains the DER encoding of the length into a base 10 integer
+  shared_ptr<DERObject> get_object_by_name(const string str); ///< Returns a
+                                                              ///pointer to an
+                                                              ///object with the
+                                                              ///given name iff
+                                                              ///a child with
+                                                              ///this name
+                                                              ///exists.
 
-        shared_ptr<DERObject> get_object_by_name(const string str); ///< Returns a pointer to an object with the given name iff a child with this name exists.
-
-
-    private:
-        size_t get_value_length();          ///< returns the size of raw_value for primitive types and the size of the concatentation for constructed types.
-
-
+private:
+  size_t get_value_length(); ///< returns the size of raw_value for primitive
+                             ///types and the size of the concatentation for
+                             ///constructed types.
 };
-
 
 #endif

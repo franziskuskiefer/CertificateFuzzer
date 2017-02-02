@@ -17,7 +17,6 @@ limitations under the License.
 #ifndef DERDEVIL_INTMANIPULATOR_H
 #define DERDEVIL_INTMANIPULATOR_H
 
-
 #include "manipulator.h"
 
 /**
@@ -26,13 +25,13 @@ limitations under the License.
 */
 class IntManipulator : public Manipulator {
 public:
-  IntManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  IntManipulator(DERObject obj, uint64_t randomness);
   void generate(uint64_t randomness, bool random, int index = -1);
 
   size_t get_fixed_manipulations_count();
 
   Botan::BigInt get_value();
-  void set_value(Botan::BigInt num);
+  virtual void set_value(Botan::BigInt num);
 
 private:
   vector<Botan::BigInt> fixed_manipulations;

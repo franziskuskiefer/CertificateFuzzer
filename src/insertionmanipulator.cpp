@@ -18,14 +18,13 @@ limitations under the License.
 
 #include <random>
 
-InsertionManipulator::InsertionManipulator(shared_ptr<DERObject> obj,
-                                           uint64_t randomness)
+InsertionManipulator::InsertionManipulator(DERObject obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void InsertionManipulator::set_fixed_manipulations(uint64_t randomness) {
-  size_t end_pos = this->derobj->raw_value.size();
+  size_t end_pos = this->derobj.raw_value.size();
 
   this->fixed_manipulations = {tuple<vector<byte>, size_t>({0}, 0),
                                tuple<vector<byte>, size_t>({0}, end_pos),
@@ -49,16 +48,16 @@ void InsertionManipulator::generate(uint64_t randomness, bool random,
 
   if (!random) {
     if (index == -1) {
-      this->derobj->raw_value.insert(
-          this->derobj->raw_value.begin() +
+      this->derobj.raw_value.insert(
+          this->derobj.raw_value.begin() +
               get<1>(this->fixed_manipulations[this->manipulation_count]),
           get<0>(this->fixed_manipulations[this->manipulation_count]).begin(),
           get<0>(this->fixed_manipulations[this->manipulation_count]).end());
 
       this->manipulation_count++;
     } else {
-      this->derobj->raw_value.insert(
-          this->derobj->raw_value.begin() +
+      this->derobj.raw_value.insert(
+          this->derobj.raw_value.begin() +
               get<1>(this->fixed_manipulations[index]),
           get<0>(this->fixed_manipulations[index]).begin(),
           get<0>(this->fixed_manipulations[index]).end());
@@ -69,7 +68,7 @@ void InsertionManipulator::generate(uint64_t randomness, bool random,
     std::uniform_int_distribution<size_t> dist(1, 5);
 
     size_t num_insertions = dist(rng); // do max 5 insertions
-    size_t raw_value_size = this->derobj->raw_value.size();
+    size_t raw_value_size = this->derobj.raw_value.size();
     size_t num_bytes, pos;
 
     dist = std::uniform_int_distribution<size_t>(0, 9);
@@ -82,7 +81,7 @@ void InsertionManipulator::generate(uint64_t randomness, bool random,
           pos = dist2(rng);
         } else
           pos = 0;
-        this->derobj->raw_value.insert(this->derobj->raw_value.begin() + pos,
+        this->derobj.raw_value.insert(this->derobj.raw_value.begin() + pos,
                                        dist3(rng));
       }
     }

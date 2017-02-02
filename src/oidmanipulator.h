@@ -24,12 +24,12 @@ limitations under the License.
 */
 class OIDManipulator : public Manipulator {
 public:
-  OIDManipulator(shared_ptr<DERObject> obj, uint64_t randomness);
+  OIDManipulator(DERObject &obj, uint64_t randomness);
   void generate(uint64_t randomness, bool random, int index = -1);
   size_t get_fixed_manipulations_count();
 
   vector<int> get_value();
-  void set_value(vector<int> oid);
+  virtual void set_value(vector<int> oid);
 
 private:
   vector<vector<int>> fixed_manipulations;

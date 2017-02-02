@@ -18,21 +18,20 @@ limitations under the License.
 
 #include <random>
 
-UTF8StringManipulator::UTF8StringManipulator(shared_ptr<DERObject> obj,
-                                             uint64_t randomness)
+UTF8StringManipulator::UTF8StringManipulator(DERObject obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void UTF8StringManipulator::set_value(string str) {
-  this->derobj->raw_value = UTF8StringManipulator::to_der(str);
+  this->derobj.raw_value = UTF8StringManipulator::to_der(str);
 }
 
 string UTF8StringManipulator::get_value() { return this->from_der(); }
 
 string UTF8StringManipulator::from_der() {
-  string str(reinterpret_cast<const char *>(&this->derobj->raw_value[0]),
-             this->derobj->raw_value.size());
+  string str(reinterpret_cast<const char *>(&this->derobj.raw_value[0]),
+             this->derobj.raw_value.size());
   Botan::Charset::transcode(str, Botan::LOCAL_CHARSET, Botan::UTF8_CHARSET);
 
   return str;

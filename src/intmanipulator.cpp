@@ -18,14 +18,13 @@ limitations under the License.
 
 #include <random>
 
-IntManipulator::IntManipulator(shared_ptr<DERObject> obj,
-                               uint64_t randomness)
+IntManipulator::IntManipulator(DERObject obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   set_fixed_manipulations(randomness);
 }
 
 void IntManipulator::set_value(Botan::BigInt num) {
-  this->derobj->raw_value = IntManipulator::to_der(num);
+  this->derobj.raw_value = IntManipulator::to_der(num);
 }
 
 void IntManipulator::set_fixed_manipulations(uint64_t randomness) {
@@ -81,7 +80,7 @@ Botan::BigInt IntManipulator::get_value() { return this->from_der(); }
 Botan::BigInt IntManipulator::from_der() {
   Botan::BigInt n;
 
-  Botan::BER_Decoder dec_base(this->derobj->raw_bytes());
+  Botan::BER_Decoder dec_base(this->derobj.raw_bytes());
   Botan::BER_Decoder dec = dec_base.decode(n);
 
   return n;
@@ -124,9 +123,11 @@ void IntManipulator::generate(uint64_t randomness, bool random, int index) {
     // create random number X (number of bits) and then create a random number
     // of X bit
     std::mt19937 rng(randomness);
-    std::uniform_int_distribution<size_t> distBit(1, 4047);
-    std::uniform_int_distribution<size_t> dist(1, (1ULL << distBit(rng)) - 1);
+    std::uniform_int_distribution<uint64_t> distBit(1, (uint64_t)-1);
+    // TODO: get larger numbers for in here.
+    // std::uniform_int_distribution<uint64_t> dist(1, (1ULL << distBit(rng)) -
+    // 1);
 
-    this->set_value(dist(rng));
+    this->set_value(Botan::BigInt(distBit(rng)));
   }
 }

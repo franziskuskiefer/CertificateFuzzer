@@ -18,21 +18,20 @@ limitations under the License.
 
 #include <random>
 
-IA5StringManipulator::IA5StringManipulator(shared_ptr<DERObject> obj,
-                                           uint64_t randomness)
+IA5StringManipulator::IA5StringManipulator(DERObject obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void IA5StringManipulator::set_value(string str) {
-  this->derobj->raw_value = IA5StringManipulator::to_der(str);
+  this->derobj.raw_value = IA5StringManipulator::to_der(str);
 }
 
 string IA5StringManipulator::get_value() { return this->from_der(); }
 
 string IA5StringManipulator::from_der() {
   string str = "";
-  for (byte b : this->derobj->raw_value) {
+  for (byte b : this->derobj.raw_value) {
     str.append(1, b);
   }
 

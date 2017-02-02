@@ -17,21 +17,21 @@ limitations under the License.
 #include "generalizedtimemanipulator.h"
 #include <random>
 
-GeneralizedTimeManipulator::GeneralizedTimeManipulator(
-    shared_ptr<DERObject> obj, uint64_t randomness)
+GeneralizedTimeManipulator::GeneralizedTimeManipulator(DERObject obj,
+                                                       uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void GeneralizedTimeManipulator::set_value(string str) {
-  this->derobj->raw_value = GeneralizedTimeManipulator::to_der(str);
+  this->derobj.raw_value = GeneralizedTimeManipulator::to_der(str);
 }
 
 string GeneralizedTimeManipulator::get_value() { return this->from_der(); }
 
 string GeneralizedTimeManipulator::from_der() {
   string str = "";
-  for (byte b : this->derobj->raw_value) {
+  for (byte b : this->derobj.raw_value) {
     str.append(1, b);
   }
 
@@ -120,7 +120,8 @@ void GeneralizedTimeManipulator::set_fixed_manipulations(uint64_t randomness) {
   vector<string> string_manipulations =
       this->general_fixed_string_manipulations();
   for (int i = 0; i < RANDOM_STRING_MANIPULATIONS; i++) {
-    string_manipulations.push_back(this->general_random_string_manipulation(randomness));
+    string_manipulations.push_back(
+        this->general_random_string_manipulation(randomness));
   }
   this->fixed_manipulations.insert(this->fixed_manipulations.end(),
                                    string_manipulations.begin(),

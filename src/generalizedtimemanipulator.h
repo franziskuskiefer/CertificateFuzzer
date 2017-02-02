@@ -25,14 +25,11 @@ limitations under the License.
 */
 class GeneralizedTimeManipulator : public Manipulator {
 public:
-  GeneralizedTimeManipulator(shared_ptr<DERObject> obj,
-                             uint64_t randomness);
+  GeneralizedTimeManipulator(DERObject obj, uint64_t randomness);
   void generate(uint64_t randomness, bool random, int index = -1);
   virtual size_t get_fixed_manipulations_count();
-
   string get_value();
   void set_value(string str);
-
   string get_random_time(uint64_t randomness);
 
 private:

@@ -18,14 +18,13 @@ limitations under the License.
 
 #include <random>
 
-DeletionManipulator::DeletionManipulator(shared_ptr<DERObject> obj,
-                                         uint64_t randomness)
+DeletionManipulator::DeletionManipulator(DERObject obj, uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void DeletionManipulator::set_fixed_manipulations(uint64_t randomness) {
-  size_t end_pos = this->derobj->raw_value.size();
+  size_t end_pos = this->derobj.raw_value.size();
 
   // don't do anything for null values
   if (end_pos == 0) {
@@ -72,7 +71,7 @@ void DeletionManipulator::generate(uint64_t randomness, bool random,
   this->restore_initial_values(); // revert last modification
 
   // don't delete from null values
-  if (this->derobj->raw_value.size() == 0)
+  if (this->derobj.raw_value.size() == 0)
     return;
 
   if (!random) {
@@ -83,13 +82,13 @@ void DeletionManipulator::generate(uint64_t randomness, bool random,
 
         // break if empty which can happen if the same index is deleted multiple
         // times
-        if (this->derobj->raw_value.empty())
+        if (this->derobj.raw_value.empty())
           break;
 
         // -i at the end because after the deletion of the i'th element, the
         // index has to be adjusted by i
-        this->derobj->raw_value.erase(
-            this->derobj->raw_value.begin() +
+        this->derobj.raw_value.erase(
+            this->derobj.raw_value.begin() +
             this->fixed_manipulations[this->manipulation_count][i] - i);
       }
 
@@ -99,12 +98,12 @@ void DeletionManipulator::generate(uint64_t randomness, bool random,
 
         // break if empty which can happen if the same index is deleted multiple
         // times
-        if (this->derobj->raw_value.empty())
+        if (this->derobj.raw_value.empty())
           break;
 
         // -i at the end because after the deletion of the i'th element, the
         // index has to be adjusted by i
-        this->derobj->raw_value.erase(this->derobj->raw_value.begin() +
+        this->derobj.raw_value.erase(this->derobj.raw_value.begin() +
                                       this->fixed_manipulations[index][i] - i);
       }
     }
@@ -112,7 +111,7 @@ void DeletionManipulator::generate(uint64_t randomness, bool random,
     std::mt19937 rng(randomness);
 
     // choose random interval and delete
-    size_t rand_range = this->derobj->raw_value.size();
+    size_t rand_range = this->derobj.raw_value.size();
     std::uniform_int_distribution<size_t> dist(0, rand_range - 1);
 
     // determine the range where the bytes are deleted
@@ -128,8 +127,8 @@ void DeletionManipulator::generate(uint64_t randomness, bool random,
     }
 
     // delete bytes
-    this->derobj->raw_value.erase(this->derobj->raw_value.begin() + pos_start,
-                                  this->derobj->raw_value.begin() + pos_end);
+    this->derobj.raw_value.erase(this->derobj.raw_value.begin() + pos_start,
+                                  this->derobj.raw_value.begin() + pos_end);
 
     this->manipulation_count++;
   }

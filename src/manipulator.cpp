@@ -28,36 +28,37 @@ limitations under the License.
 string Manipulator::long_string = string("");
 size_t Manipulator::long_string_count = 0;
 
-Manipulator::Manipulator(shared_ptr<DERObject> obj, uint64_t randomness) {
-  this->derobj = obj;
+Manipulator::Manipulator(DERObject &obj, uint64_t randomness) : derobj(obj) {
   this->manipulation_count = 0;
 
   // save the initial derobj values to restore later
-  this->initial_derobj_values.raw_tag = obj->raw_tag;
-  this->initial_derobj_values.raw_value = obj->raw_value;
-  this->initial_derobj_values.raw_length = obj->raw_length;
+  this->initial_derobj_values.raw_tag = obj.raw_tag;
+  this->initial_derobj_values.raw_value = obj.raw_value;
+  this->initial_derobj_values.raw_length = obj.raw_length;
 
   static bool initialized;
-  // init long_string as 50mb string
+  // init a long_string
   if (!initialized) {
     initialized = true;
 
     size_t c_start = 0;
-    size_t c_end = 50 * 1024 * 1024;
+    size_t c_end = 3 * 1024 * 1024;
     char *c = (char *)malloc(c_end);
     std::mt19937 rng(randomness);
     std::uniform_int_distribution<size_t> dist(1, 253);
-    for (; c_start < c_end; c_start++) {
-      *(c + c_start) = dist(rng); // avoid null terminator
+    for (; c_start < c_end - 1; c_start++) {
+      *(c + c_start) = dist(rng);
     }
-    // Manipulator::long_string.insert(0, string(c));
+    c[c_end - 1] = '\0';
+    Manipulator::long_string.insert(0, string(c));
+    free(c);
   }
 }
 
 void Manipulator::restore_initial_values() {
-  this->derobj->raw_tag = this->initial_derobj_values.raw_tag;
-  this->derobj->raw_length = this->initial_derobj_values.raw_length;
-  this->derobj->raw_value = this->initial_derobj_values.raw_value;
+  this->derobj.raw_tag = this->initial_derobj_values.raw_tag;
+  this->derobj.raw_length = this->initial_derobj_values.raw_length;
+  this->derobj.raw_value = this->initial_derobj_values.raw_value;
 }
 
 size_t Manipulator::get_current_manipulation_count() {
@@ -65,49 +66,29 @@ size_t Manipulator::get_current_manipulation_count() {
 }
 
 // factory method
-shared_ptr<Manipulator> Manipulator::make_manipulator(shared_ptr<DERObject> obj,
+unique_ptr<Manipulator> Manipulator::make_manipulator(DERObject obj,
                                                       uint64_t randomness) {
-
-  shared_ptr<Manipulator> r = nullptr;
-
-  switch (int(obj->raw_tag)) {
+  switch (int(obj.raw_tag)) {
   case ASN1_TYPE_INTEGER:
-    r = shared_ptr<Manipulator>(new IntManipulator(obj, randomness));
-    break;
-
+    return unique_ptr<Manipulator>(new IntManipulator(obj, randomness));
   case ASN1_TYPE_OBJECT_IDENTIFIER:
-    r = shared_ptr<Manipulator>(new OIDManipulator(obj, randomness));
-    break;
-
+    return unique_ptr<Manipulator>(new OIDManipulator(obj, randomness));
   case ASN1_TYPE_PRINTABLESTRING:
-    r = shared_ptr<Manipulator>(
+    return unique_ptr<Manipulator>(
         new PrintableStringManipulator(obj, randomness));
-    break;
-
   case ASN1_TYPE_UTCTime:
-    r = shared_ptr<Manipulator>(new UTCTimeManipulator(obj, randomness));
-    break;
-
+    return unique_ptr<Manipulator>(new UTCTimeManipulator(obj, randomness));
   case ASN1_TYPE_IA5STRING:
-    r = shared_ptr<Manipulator>(new IA5StringManipulator(obj, randomness));
-    break;
-
+    return unique_ptr<Manipulator>(new IA5StringManipulator(obj, randomness));
   case ASN1_TYPE_UTF8STRING:
-    r = shared_ptr<Manipulator>(new UTF8StringManipulator(obj, randomness));
-    break;
-
+    return unique_ptr<Manipulator>(new UTF8StringManipulator(obj, randomness));
   case ASN1_TYPE_GeneralizedTime:
-    r = shared_ptr<Manipulator>(
+    return unique_ptr<Manipulator>(
         new GeneralizedTimeManipulator(obj, randomness));
-    break;
+  default:
+    return nullptr;
   }
-
-  return r;
 }
-
-/**
-    defines general manipulations that can be used for all string-based fields
-*/
 
 vector<string> Manipulator::general_fixed_string_manipulations() {
   vector<string> r;
@@ -130,11 +111,8 @@ vector<string> Manipulator::general_fixed_string_manipulations() {
   return r;
 }
 
-/**
-    return a random string that includes random symbols
-*/
-string
-Manipulator::general_random_string_manipulation(uint64_t randomness) {
+// Generate a random string.
+string Manipulator::general_random_string_manipulation(uint64_t randomness) {
   std::mt19937 rng(randomness);
   std::uniform_int_distribution<size_t> dist(10, 1000);
   int length = dist(rng);

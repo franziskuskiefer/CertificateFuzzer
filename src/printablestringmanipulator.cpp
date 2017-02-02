@@ -18,21 +18,21 @@ limitations under the License.
 
 #include <random>
 
-PrintableStringManipulator::PrintableStringManipulator(
-    shared_ptr<DERObject> obj, uint64_t randomness)
+PrintableStringManipulator::PrintableStringManipulator(DERObject obj,
+                                                       uint64_t randomness)
     : Manipulator(obj, randomness) {
   this->set_fixed_manipulations(randomness);
 }
 
 void PrintableStringManipulator::set_value(string str) {
-  this->derobj->raw_value = PrintableStringManipulator::to_der(str);
+  this->derobj.raw_value = PrintableStringManipulator::to_der(str);
 }
 
 string PrintableStringManipulator::get_value() { return this->from_der(); }
 
 string PrintableStringManipulator::from_der() {
   string str = "";
-  for (byte b : this->derobj->raw_value) {
+  for (byte b : this->derobj.raw_value) {
     str.append(1, b);
   }
 
@@ -41,8 +41,8 @@ string PrintableStringManipulator::from_der() {
 
 vector<byte> PrintableStringManipulator::to_der(string str) {
   vector<byte> result;
-  for (char &c : str) {
-    result.push_back(c);
+  for (size_t i = 0; i < str.length(); ++i) {
+    result.push_back(str.at(i));
   }
   return result;
 }
@@ -51,8 +51,7 @@ size_t PrintableStringManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-void PrintableStringManipulator::set_fixed_manipulations(
-    uint64_t randomness) {
+void PrintableStringManipulator::set_fixed_manipulations(uint64_t randomness) {
   // also use general string manipulations
   vector<string> string_manipulations =
       this->general_fixed_string_manipulations();
