@@ -124,8 +124,8 @@ void IntManipulator::generate(uint64_t randomness, bool random, int index) {
     // create random number X (number of bits) and then create a random number
     // of X bit
     std::mt19937 rng(randomness);
-    std::uniform_int_distribution<size_t> distBit(1, 4047);
-    std::uniform_int_distribution<size_t> dist(1, (1ULL << distBit(rng)) - 1);
+    // std::uniform_int_distribution<size_t> distBit(1, 4047);
+    std::uniform_int_distribution<uint64_t> dist(1, (uint64_t)-1);
 
     this->set_value(dist(rng));
   }

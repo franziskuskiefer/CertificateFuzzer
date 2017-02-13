@@ -1195,7 +1195,8 @@ shared_ptr<DERObject> parse_DER(const vector<byte> input,
     if (expand_primitives_flag) {
       pseudo_constructed = false;
       if (curr_top.size() > 3) {
-        if ((derobj->parent->parent->parent->name.compare("extensions") == 0 and
+        if ((derobj->parent.lock()->parent.lock()->parent.lock()->name.compare(
+                 "extensions") == 0 and
              int(derobj->raw_tag) == 4))
           pseudo_constructed = true;
       }

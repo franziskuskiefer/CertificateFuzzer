@@ -21,7 +21,6 @@ using byte = unsigned char;
 
 
 DERObject::DERObject() {
-    this->parent = nullptr;
     this->root = false;
     this->name = "";
     this->pseudo_constructed = false;

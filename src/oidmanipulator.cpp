@@ -118,7 +118,7 @@ void OIDManipulator::generate(uint64_t randomness, bool random, int index) {
     }
 
     // randomly add some more values
-    std::uniform_int_distribution<size_t> dist2(0, 9);
+    std::uniform_int_distribution<size_t> dist2(1, 9);
     for (int i = 0; i < dist2(rng); i++) {
       result.push_back(dist(rng));
     }
