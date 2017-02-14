@@ -20,12 +20,12 @@ limitations under the License.
 
 PrintableStringManipulator::PrintableStringManipulator(
     shared_ptr<DERObject> obj, uint64_t randomness)
-    : Manipulator(obj, randomness) {
+    : Manipulator(obj, randomness), fixed_manipulations() {
   this->set_fixed_manipulations(randomness);
 }
 
 void PrintableStringManipulator::set_value(string str) {
-  this->derobj->raw_value = PrintableStringManipulator::to_der(str);
+  this->derobj->raw_value = this->to_der(str);
 }
 
 string PrintableStringManipulator::get_value() { return this->from_der(); }
@@ -41,8 +41,12 @@ string PrintableStringManipulator::from_der() {
 
 vector<byte> PrintableStringManipulator::to_der(string str) {
   vector<byte> result;
-  for (char &c : str) {
-    result.push_back(c);
+  if (!str.empty()) {
+    for (char &c : str) {
+      result.push_back(c);
+    }
+  } else {
+    result.push_back('1');
   }
   return result;
 }
@@ -51,8 +55,7 @@ size_t PrintableStringManipulator::get_fixed_manipulations_count() {
   return this->fixed_manipulations.size();
 }
 
-void PrintableStringManipulator::set_fixed_manipulations(
-    uint64_t randomness) {
+void PrintableStringManipulator::set_fixed_manipulations(uint64_t randomness) {
   // also use general string manipulations
   vector<string> string_manipulations =
       this->general_fixed_string_manipulations();
@@ -68,10 +71,14 @@ void PrintableStringManipulator::set_fixed_manipulations(
 void PrintableStringManipulator::generate(uint64_t randomness, bool random,
                                           int index) {
   if (!random) {
-    if (index == -1)
+    if (index < 0) {
       this->set_value(this->fixed_manipulations[this->manipulation_count++]);
-    else
-      this->set_value(this->fixed_manipulations[index]);
+    } else if (this->fixed_manipulations.size()) {
+      this->set_value(
+          this->fixed_manipulations[index % this->fixed_manipulations.size()]);
+    } else {
+      this->set_value("1");
+    }
   } else {
     // do random stuff
     this->set_value(this->general_random_string_manipulation(randomness));

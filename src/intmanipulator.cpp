@@ -20,7 +20,7 @@ limitations under the License.
 
 IntManipulator::IntManipulator(shared_ptr<DERObject> obj,
                                uint64_t randomness)
-    : Manipulator(obj, randomness) {
+    : Manipulator(obj, randomness), fixed_manipulations() {
   set_fixed_manipulations(randomness);
 }
 
@@ -30,11 +30,6 @@ void IntManipulator::set_value(Botan::BigInt num) {
 
 void IntManipulator::set_fixed_manipulations(uint64_t randomness) {
   Botan::BigInt base_value = this->get_value();
-
-  /***/
-  // only for testing purposes: DELETE THIS LINE LATER!!
-  fixed_manipulations.push_back(base_value);
-  /***/
 
   fixed_manipulations.push_back(base_value + 1);
   fixed_manipulations.push_back(base_value - 1);

@@ -34,10 +34,11 @@ ADD_DEFINITIONS(
      -Wno-sign-compare -Wno-unused-parameter -Wno-unused-label -Wno-cast-qual
      -Wno-char-subscripts 
      -Wunused-function   -Wunused-value -Wunused-variable
-  -Wpointer-arith  -Wcast-align -Wwrite-strings
+     -Wpointer-arith  -Wcast-align -Wwrite-strings
   #out: -Wconversion 
   )
-SET (CMAKE_CXX_FLAGS "-fsanitize=address -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize=leak")
+#-fsanitize=memory -fsanitize-memory-track-origins
+# SET (CMAKE_CXX_FLAGS "-fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize=bool,signed-integer-overflow,shift,vptr")
 
 #ADD_DEFINITIONS(-DFLEA_PLTF_X86)
 #ADD_DEFINITIONS(-DFLEA_PLTF_X86_64)

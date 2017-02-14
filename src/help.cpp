@@ -57,34 +57,3 @@ vector<byte> base128(int n) {
     return result;
 }
 
-/**
-    returns a vector of random strings that contains (in order):
-    YY (or YY if YYYY = true): Year
-    MM: Month
-    DD: Day
-    HH: Hour
-    mm: minutes
-    ss: seconds
-    fff: miliseconds
-    +hhmm or -hhmm: offset for difference of local and UTC time
-*/
-vector<string> random_YYMMDDHHmmssfff_hhmm(bool YYYY = false) {
-    Botan::RandomNumberGenerator *rng = Botan::RandomNumberGenerator::make_rng();
-    Botan::BigInt r;
-    Botan::BigInt min_val;
-    Botan::BigInt max_val;
-
-    vector<string> s;
-
-    // add YY / YYYY
-    if (YYYY) {
-        min_val = 0; max_val = 9999;
-
-    }
-//    Botan::BigInt length = r.random_integer(*rng, min_val, max_val);
-}
-
-
-
-
-

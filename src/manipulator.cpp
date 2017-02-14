@@ -157,7 +157,7 @@ Manipulator::general_random_string_manipulation(uint64_t randomness) {
 
   // construct random string s
   string s = "";
-  dist = std::uniform_int_distribution<size_t>(0, charPool.size() - 1);
+  dist = std::uniform_int_distribution<size_t>(1, charPool.size() - 1);
   for (int i = 0; i < length; i++) {
     s += charPool[dist(rng)];
   }

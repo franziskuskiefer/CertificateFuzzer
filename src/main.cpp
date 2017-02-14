@@ -47,6 +47,7 @@ limitations under the License.
 #include "base64.h"
 
 #include <random>
+#include <assert.h>
 
 // header for linux files
 #include <sys/stat.h>
@@ -542,14 +543,14 @@ int write_pem_file(vector<byte> cert_content, bool cert_signed) {
 }
 
 string build_pem(vector<byte> cert_content) {
-  byte arr[cert_content.size()];
-  copy(cert_content.begin(), cert_content.end(), arr);
-
+  if (cert_content.empty()) {
+    return "";
+  }
   stringstream write;
 
   write << "-----BEGIN CERTIFICATE-----\n";
   int count_to_64 = 0;
-  for (byte c : base64_encode(arr, cert_content.size())) {
+  for (byte c : base64_encode(&cert_content[0], cert_content.size())) {
     write << c;
     if (count_to_64 == 63) {
       write << "\n";
@@ -620,8 +621,9 @@ fuzz_engine_single_field(vector<shared_ptr<DERObject>> cert_field_vector) {
 
   // factory call to create the field-specific manipulator
   x = Manipulator::make_manipulator(field, seed);
-  if (x != nullptr)
+  if (x) {
     manipulators.push_back(x);
+  }
 
   // add "general manipulators"
   manipulators.push_back(im);
@@ -629,6 +631,8 @@ fuzz_engine_single_field(vector<shared_ptr<DERObject>> cert_field_vector) {
   manipulators.push_back(cm);
 
   size_t RANDOM_MANIPULATIONS_COUNT = 30;
+
+  assert(manipulators.size() > 0);
 
   // iterate over all manipulators to manipulate the field
   // for (shared_ptr<Manipulator> manipulator : manipulators) {
@@ -645,7 +649,7 @@ fuzz_engine_single_field(vector<shared_ptr<DERObject>> cert_field_vector) {
   }
 
   // restore initial values before modifying the value
-  manipulator->restore_initial_values();
+  // manipulator->restore_initial_values();
 
   // do fixed or random manipulations
   if (i < manipulator->get_fixed_manipulations_count()) {
@@ -658,11 +662,10 @@ fuzz_engine_single_field(vector<shared_ptr<DERObject>> cert_field_vector) {
   // encoding
   root->recalculate_lengths();
 
-  // write certificate to file
-  // write_pem_file(root->raw_bytes(), false);
-  // write_der_file(file_number, root->raw_bytes());
+  // Get resulting certificate as PEM string.
   string result = build_pem(root->raw_bytes());
 
+  // TODO: add this.
   if (SIGN_CERTS) {
     // create correct signature
     sign_certificate();
@@ -672,18 +675,19 @@ fuzz_engine_single_field(vector<shared_ptr<DERObject>> cert_field_vector) {
     // write_der_file(file_number, root->raw_bytes());
   }
 
-  // now do some bit flips
-  do_bitflips(10, 8);
-  // some output on the screen
-  if (file_number - file_number_100 >= 100) {
-    file_number_100 = file_number;
-  }
+  // TODO: add this.
+  // // now do some bit flips
+  // do_bitflips(10, 8);
+  // // some output on the screen
+  // if (file_number - file_number_100 >= 100) {
+  //   file_number_100 = file_number;
   // }
+  // // }
 
   // restore state that our tree had before applying manipulations of
   // 'manipulator'
-  manipulator->restore_initial_values();
-  root->recalculate_lengths();
+  // manipulator->restore_initial_values();
+  // root->recalculate_lengths();
   return result;
   // }
   // }
@@ -758,8 +762,9 @@ fuzz_engine_multiple_fields(vector<shared_ptr<DERObject>> cert_field_vector,
 
       // factory call to create the field-specific manipulator
       sm = Manipulator::make_manipulator(fuzz_objects[i], seed);
-      if (sm != nullptr)
+      if (sm) {
         manipulators[i].push_back(sm);
+      }
 
       manipulators[i].push_back(im);
       manipulators[i].push_back(dm);
@@ -799,6 +804,7 @@ fuzz_engine_multiple_fields(vector<shared_ptr<DERObject>> cert_field_vector,
             manipulator.push_back(manipulators[i][2]);
         }
 
+        assert(manipulator.size() > 0);
         // now choose (sample) if random or fixed value will be chosen.
         x = dist(rng);
         if (x <= 75 and manipulator[i]->get_fixed_manipulations_count() > 0) {
@@ -1433,8 +1439,8 @@ void set_common_name() {
   }
 }
 
-string getCert(uint64_t seed_in, const uint8_t *cert_in, size_t certLen) {
-  if (!cert_in) {
+string getCert(uint64_t seed_in, const std::vector<uint8_t> cert_in) {
+  if (cert_in.empty()) {
     return "";
   }
 
@@ -1449,8 +1455,7 @@ string getCert(uint64_t seed_in, const uint8_t *cert_in, size_t certLen) {
   // get_issuer();
 
   // reading cert
-  vector<byte> input(cert_in, cert_in + certLen);
-  root = parse_DER(input);
+  root = parse_DER(cert_in);
 
   // TODO: why would we want to do that?
   delete_extensions();
@@ -1471,12 +1476,8 @@ string getCert(uint64_t seed_in, const uint8_t *cert_in, size_t certLen) {
   std::mt19937 rng(seed);
   std::bernoulli_distribution bdist;
   if (bdist(rng)) {
-    string r = fuzz_engine_single_field(cert_field_vector);
-    root.reset(); // XXX: force leak for debugging
-    return r;
+    return fuzz_engine_single_field(cert_field_vector);
   } else {
-    string r = fuzz_engine_multiple_fields(cert_field_vector, 4, 1, 500);
-    root.reset(); // XXX: force leak for debugging
-    return r;
+    return fuzz_engine_multiple_fields(cert_field_vector, 4, 1, 500);
   }
 }
