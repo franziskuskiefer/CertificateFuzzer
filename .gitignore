@@ -5,3 +5,5 @@ build/
 cmake_install.cmake
 fuzzed_certs*
 CMakeCache.txt
+.ninja_*
+*.ninja

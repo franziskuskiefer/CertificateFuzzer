@@ -38,7 +38,7 @@ ADD_DEFINITIONS(
   #out: -Wconversion 
   )
 #-fsanitize=memory -fsanitize-memory-track-origins
-# SET (CMAKE_CXX_FLAGS "-fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize=bool,signed-integer-overflow,shift,vptr")
+SET (CMAKE_CXX_FLAGS "-fsanitize=address -fsanitize=leak -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=undefined -fno-sanitize-recover=undefined -fsanitize=bool,signed-integer-overflow,shift,vptr")
 
 #ADD_DEFINITIONS(-DFLEA_PLTF_X86)
 #ADD_DEFINITIONS(-DFLEA_PLTF_X86_64)
@@ -67,7 +67,7 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DEBUG" OR CMA
 ENDIF()
 
 
-LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11/)
 
 SET(BUILD_STATIC false CACHE STRING
       "Wether to build also a static version of the library or not: true/false"
@@ -95,7 +95,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 
 
 # Directories
-SET(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/build/include/ src )
+SET(INCLUDE_DIR include ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11/build/include/ src )
 
 SET(SRC_DIR src )
 
@@ -117,13 +117,12 @@ ENDIF()
 IF(DO_BUILD_STATIC)
     #ADD_LIBRARY(${FULL_LIB_STRING_STATIC} STATIC ${FLEA_SRCS})
 ENDIF()
-#src/manipulator.cpp src/DERObject.cpp src/help.cpp
-# ADD_EXECUTABLE(CertFuzzer src/main.cpp  ${CertFuzzer_SRC})
-ADD_EXECUTABLE(CertFuzzer src/test.cpp  ${CertFuzzer_SRC})
-# TARGET_LINK_LIBRARIES(CertFuzzer botan-1.11)
-target_link_libraries(CertFuzzer ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/libbotan-1.11.a)
+
+# Executable for testing.
+ADD_EXECUTABLE(CertFuzzer tests/test.cpp  ${CertFuzzer_SRC})
+target_link_libraries(CertFuzzer ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11/libbotan-1.11.a)
 target_link_libraries(CertFuzzer pthread)
 
-ADD_LIBRARY(LibCertFuzzer STATIC ${CertFuzzer_SRC})
-target_link_libraries(LibCertFuzzer -Wl,--whole-archive ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11.19/libbotan-1.11.a -Wl,--no-whole-archive)
-target_link_libraries(LibCertFuzzer pthread)
+ADD_LIBRARY(CertMutator STATIC ${CertFuzzer_SRC})
+target_link_libraries(CertMutator -Wl,--whole-archive ${CMAKE_SOURCE_DIR}/Libraries/Botan-1.11/libbotan-1.11.a -Wl,--no-whole-archive)
+target_link_libraries(CertMutator pthread)

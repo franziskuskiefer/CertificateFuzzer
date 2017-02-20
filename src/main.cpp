@@ -411,48 +411,49 @@ void set_CA_issuer() {
    CA_KEY_PATH
     Creates Sha256WithRSAEncryption Signature
 */
-void sign_certificate() {
-  // signature algorithm OID should be "1.2.840.113549.1.1.11"
-  vector<int> oid = {1, 2, 840, 113549, 1, 1, 11};
+// FIXME: make this work again.
+// void sign_certificate() {
+//   // signature algorithm OID should be "1.2.840.113549.1.1.11"
+//   vector<int> oid = {1, 2, 840, 113549, 1, 1, 11};
 
-  OIDManipulator o =
-      OIDManipulator(root->get_object_by_name("signatureAlgorithm"), seed);
-  o.set_value(oid);
+//   OIDManipulator o =
+//       OIDManipulator(root->get_object_by_name("signatureAlgorithm"), seed);
+//   o.set_value(oid);
 
-  OIDManipulator o2 =
-      OIDManipulator(root->get_object_by_name("signature2Algorithm"), seed);
-  o2.set_value(oid);
+//   OIDManipulator o2 =
+//       OIDManipulator(root->get_object_by_name("signature2Algorithm"), seed);
+//   o2.set_value(oid);
 
-  root->recalculate_lengths();
+//   root->recalculate_lengths();
 
-  // Private_Key *PKCS8::load_key(const std::string &filename,
-  // RandomNumberGenerator &rng, const std::string &passphrase = "")
-  Botan::Private_Key *priv = Botan::PKCS8::load_key(
-      CA_KEY_PATH, *Botan::RandomNumberGenerator::make_rng(), "");
+//   // Private_Key *PKCS8::load_key(const std::string &filename,
+//   // RandomNumberGenerator &rng, const std::string &passphrase = "")
+//   Botan::Private_Key *priv = Botan::PKCS8::load_key(
+//       CA_KEY_PATH, *Botan::RandomNumberGenerator::make_rng(), "");
 
-  // Botan::RSA_PrivateKey* priv_rsa = dynamic_cast<Botan::RSA_PrivateKey*>
-  // (priv);
-  /*cout << endl << "d: " << priv_rsa->get_d() << endl;
-  cout << endl << "n: " << priv_rsa->get_n() << endl;
-  cout << endl << "n length: " << priv_rsa->get_n().bytes() << endl;*/
+//   // Botan::RSA_PrivateKey* priv_rsa = dynamic_cast<Botan::RSA_PrivateKey*>
+//   // (priv);
+//   /*cout << endl << "d: " << priv_rsa->get_d() << endl;
+//   cout << endl << "n: " << priv_rsa->get_n() << endl;
+//   cout << endl << "n length: " << priv_rsa->get_n().bytes() << endl;*/
 
-  Botan::PK_Signer signer = Botan::PK_Signer(*priv, "EMSA3(SHA-256)");
+//   Botan::PK_Signer signer = Botan::PK_Signer(*priv, "EMSA3(SHA-256)");
 
-  // sign TBSCertificate part
-  vector<byte> signature = signer.sign_message(
-      root->get_object_by_name("TBSCertificate")->raw_bytes(),
-      *Botan::RandomNumberGenerator::make_rng());
+//   // sign TBSCertificate part
+//   vector<byte> signature = signer.sign_message(
+//       root->get_object_by_name("TBSCertificate")->raw_bytes(),
+//       *Botan::RandomNumberGenerator::make_rng());
 
-  // replace signature
-  root->get_object_by_name("signatureValue")->raw_value = signature;
-  root->get_object_by_name("signatureValue")
-      ->raw_value.insert(
-          root->get_object_by_name("signatureValue")->raw_value.begin(), 0);
-  root->recalculate_lengths();
+//   // replace signature
+//   root->get_object_by_name("signatureValue")->raw_value = signature;
+//   root->get_object_by_name("signatureValue")
+//       ->raw_value.insert(
+//           root->get_object_by_name("signatureValue")->raw_value.begin(), 0);
+//   root->recalculate_lengths();
 
-  // free the memory
-  delete priv;
-}
+//   // free the memory
+//   delete priv;
+// }
 
 /**
     writes our certificate-tree with root 'root' in DER-encoding to a file
@@ -668,7 +669,7 @@ fuzz_engine_single_field(vector<shared_ptr<DERObject>> cert_field_vector) {
   // TODO: add this.
   if (SIGN_CERTS) {
     // create correct signature
-    sign_certificate();
+    // FIXME: sign_certificate();
 
     // write certificate to file again, this time with correct signature
     write_pem_file(root->raw_bytes(), true);
@@ -833,7 +834,7 @@ fuzz_engine_multiple_fields(vector<shared_ptr<DERObject>> cert_field_vector,
 
     if (SIGN_CERTS) {
       // create correct signature
-      sign_certificate();
+      // FIXME: sign_certificate();
 
       // write certificate to file again, this time with correct signature
       write_pem_file(root->raw_bytes(), true);
