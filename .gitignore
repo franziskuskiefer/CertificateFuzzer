@@ -7,3 +7,5 @@ fuzzed_certs*
 CMakeCache.txt
 .ninja_*
 *.ninja
+*.chk
+out/

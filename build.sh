@@ -14,3 +14,7 @@ cmake .
 make -j16
 
 echo "done."
+
+# cwd=$(cd $(dirname $0); pwd -P)
+# gyp -f ninja --depth="$cwd" --generator-output="." "$cwd"/build.gyp
+# ninja -C out/Default
